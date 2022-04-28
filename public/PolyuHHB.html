@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Click on Map</title>
+    <meta charset='utf-8'>
+    <script src='https://code.jquery.com/jquery-3.5.1.slim.min.js'></script>
+    <script src='https://unpkg.com/@popperjs/core@2.4.0/dist/umd/popper.min.js'></script>
+    <link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css'>
+    <script src='https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js'></script>
+    <!-- dependent maplibre-gl -->
+    <script src='https://unpkg.com/maplibre-gl@1.15.2/dist/maplibre-gl.js'></script>
+    <link href='https://unpkg.com/maplibre-gl@1.15.2/dist/maplibre-gl.css' rel='stylesheet'/>
+    <!-- mapxus map -->
+    <script src='https://web-sdk.mapxus.com/prod/mapxus-map-4.1.4.js'></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body, #map {
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+<div id='map'></div>
+<div class='modal fade bd-example-modal-sm'>
+    <div class='modal-dialog modal-sm'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h5 class='modal-title'>Callback</h5>
+                <button type='button' class='close' data-dismiss='modal' aria-label='Close'>
+                    <span aria-hidden='true'>&times;</span>
+                </button>
+            </div>
+            <div class='modal-body'>
+                <pre><code></code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // init maplibre-gl map
+    var maplibreMap = new maplibregl.Map({
+        container: 'map',
+        zoom: 16.0
+    });
+    // init mapxus map
+    var map = new MapxusMap.Map({
+        map: maplibreMap,
+        appId: 'com.polyuhkcc.lbsproject.web',
+        secret: '1feOlgd/gr',
+        buildingId: 'f38591fbcd70488b985a5cf5cfd656c0'
+    });
+    // mapxus load map listener
+    map.renderComplete(function () {
+        var marker = new MapxusMap.Marker(map);
+        function add() {
+            // add a marker
+            // var coordinates = [113.2976025, 23.1114014];
+            // add multi marker
+            var coordinates = [
+                [114.1848467193725, 22.303260922327922],
+            ];
+            marker.create(coordinates, map.currentFloor, map.building.id);
+            // marker on click event
+            marker.onEventListener('click', function (evt) {
+                // use maplibre popup function to display
+                new maplibregl.Popup()
+                    .setLngLat(evt.lngLat)
+                    .setHTML(
+                        '<p>floor: ' + map.currentFloor + '</p>' +
+                        '<p>lat: ' + evt.lngLat.lat + '</p>' +
+                        '<p>lng: ' + evt.lngLat.lng + '</p>'
+                    )
+                    .addTo(maplibreMap)
+            });
+        }
+        add();
+
+
+
+    });
+</script>
+</body>
+
+</html>
